@@ -1,0 +1,22 @@
+{
+    "collab_server" : "",
+    "contents" : "##Load Libraries\nlibrary(readxl)\nlibrary(car)\nlibrary(ggpubr)\n\n##QUEST0\nquest0 <- read_excel(\"~/Desktop/NOVA IMS/Statistics/ANOVA - R/dir_anova_stats/quest0.xls\")\n#Descriptive statistics - dataset\nsummary(quest0)\ngender_freq<-prop.table(table(quest0$gender))\nround(gender_freq, 2)           \n\n#Mean and SD of the differences of weight \nmean <- tapply(quest0$Diff, quest0$Diet, mean)\nsdev <- tapply(quest0$Diff, quest0$Diet, sd)\nexp_quest0 <- cbind (mean, sdev)\nexp_quest0\n\n#Recoding/Renaming Diets\nquest0$Diet[quest0$Diet==\"1\"] <- \"Dieta 1\"\nquest0$Diet[quest0$Diet==\"2\"] <- \"Dieta 2\"\nquest0$Diet[quest0$Diet==\"3\"] <- \"Dieta 3\"\nView(quest0)\n\n#Exploratory data from weight loss\nround(exp_quest0, 3)\n\n#Boxplot\n#col nova: col=\"#c0d630\") \nboxplot(quest0$Diff ~ quest0$Diet, data=quest0, col=(c(\"#c0d630\", \"#5d666d\")), \n        ylab= \"Peso Perdido em 6 Semanas (kg)\", xlab= \"ID Dieta\") \n\n##QUEST1 (femVSMas)\nquest1 <- read_excel(\"~/Desktop/NOVA IMS/Statistics/ANOVA - R/dir_anova_stats/quest1.xlsx\")\ngender_freq<-prop.table(table(quest0$gender))\nround(gender_freq, 2)  \n#summary\nsummary(quest1)\n#SDEV\nsd(quest1$`Peso Homens`, na.rm = TRUE)\nsd(quest1$`Peso Mulheres`, na.rm = TRUE)\n#Boxplot Function\nboxplotHM <- function(column_name1, column_name2)\n{return(boxplot(c(quest1[column_name1], quest1[column_name2]), \n                  col=(c(\"#5d666d\", \"#c0d630\")), main=\"Pesos Originais\", xlab=(\"Sexo\")))}\nboxplotHM('Peso Homens', 'Peso Mulheres')\n\n#Normality\n#Levene Test (assumption of homogeneity of variance)\nleveneTest(y = quest0$`pre,weight`, group = quest0$gender)\n\n\n##QUEST2 (pesos_iniciais_age)\nquest2 <- read_excel(\"~/Desktop/NOVA IMS/Statistics/ANOVA - R/dir_anova_stats/quest2.xlsx\")\nsummary(quest2)\nsd(quest2$`15-29a`, na.rm = TRUE)\nsd(quest2$`30-44a`, na.rm = TRUE)\nsd(quest2$`45-60a`, na.rm = TRUE)\n\nboxplot_age <- function(column_name1, column_name2, column_name3)\n{return(boxplot(c(quest2[column_name1], quest2[column_name2], quest2[column_name3]), \n                  col=(c(\"#c0d630\", \"#5d666d\", \"#c0d630\")), main=\"Pesos por Idade\"))}\nboxplot_age(\"15-29a\", \"30-44a\", \"45-60a\")\n\n\n##Questão 2 - Pesos Iniciais/Age\n#Anova\nanova_ages <- aov(quest0$Diff ~ quest0$Age_Group)\nsummary(anova_ages)\n\n#Assumption of normality: shapiro residuals and qq plot from diff(ages)\n#shapiro\nshapiro.test(quest0$`pre,weight`)\nres_ages <- anova_ages$residuals\nhist(res_ages, main = \"Residuos por Grupo Etario\", xlab = \"Peso Perdido\", col=(c(\"#c0d630\", \"#5d666d\")))\n#QQPlot for pre-weight\nggqqplot(quest0$`pre,weight`,col=(c(\"#c0d630\")), main=\"Q-Q Plot do Peso Inicial\")\n\n#C:Residuals and qqplot seem to be normally destributed\n\n#Levene Test (assumption of homogeneity of variance)\nleveneTest(y = quest0$`pre,weight`, group = quest0$Age_Group)\n#Levene test shows that pr(>F)=0.514. Because this p-value(0,51) is bigger than 0.05, equal variances could be assumed\n\n##Questão 3 \n#Anova\n\n#QQPlot for Diff\nggqqplot(quest0$Diff,col=(c(\"#c0d630\")), main=\"Q-Q Plot do Peso Perdido\")\n\n\n#T.TEST\nsummary(quest1)\n\ntt1<- t.test(quest1$`Peso Homens`, quest1$`Peso Mulheres`, alternative = \"less\", paired=FALSE, conf.level = 0.95)\ntt2<- t.test(quest1$`Peso Homens`, quest1$`Peso Mulheres`, alternative = \"less\", paired=FALSE, conf.level = 0.95, var.equal = TRUE)\n\ntt1\ntt2\n\n#Testes de homocedasticidade para a questão 3\n#Levene\nleveneTest(quest0$Diff ~ interaction(quest0$Diet, quest0$Age_Group))\n#Barlett\nbartlett.test(quest0$Diff ~ interaction(quest0$Diet, quest0$Age_Group))\n",
+    "created" : 1512933632416.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "1161660486",
+    "id" : "AC8A113D",
+    "lastKnownWriteTime" : 1513552430,
+    "last_content_update" : 1513552430871,
+    "path" : "~/Desktop/NOVA IMS/Statistics/ANOVA - R/dir_anova_stats/rscript.R",
+    "project_path" : "rscript.R",
+    "properties" : {
+        "docOutlineVisible" : "0",
+        "tempName" : "Untitled1"
+    },
+    "relative_order" : 2,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}
